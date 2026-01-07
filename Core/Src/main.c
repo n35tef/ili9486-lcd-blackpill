@@ -33,12 +33,9 @@ int main(void)
 {
     HAL_Init();
     SystemClock_Config();
-
-
     MX_GPIO_Init();
     MX_DMA_Init();
     MX_SPI2_Init();
-
 
     while (1)
     {
