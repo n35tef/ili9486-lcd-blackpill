@@ -46,6 +46,7 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     ${CMAKE_SOURCE_DIR}/Drivers/ili9486/ili9486.c
+    ${CMAKE_SOURCE_DIR}/Drivers/ili9486/lcd_io_spi2.c
 )
 
 # Add include paths
