@@ -37,14 +37,22 @@ int main(void)
     MX_DMA_Init();
     MX_SPI2_Init();
 
+    ili9486_init();
+
     while (1)
     {
-        //   if (HAL_GPIO_ReadPin(USER_KEY_GPIO_Port, USER_KEY_Pin) == GPIO_PIN_RESET) {
-        //     HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_RESET); // Turn on LED
-        //   }
-        //   else {
-        //     HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_SET); // Turn off LED
-        //   }
+        /* Cycle full-screen colors so any panel response is obvious (independent of read-back) */
+        ili9486_fill_screen(ILI9486_RED);
+        HAL_GPIO_TogglePin(USER_LED_GPIO_Port, USER_LED_Pin);
+        HAL_Delay(600);
+
+        ili9486_fill_screen(ILI9486_GREEN);
+        HAL_GPIO_TogglePin(USER_LED_GPIO_Port, USER_LED_Pin);
+        HAL_Delay(600);
+
+        ili9486_fill_screen(ILI9486_BLUE);
+        HAL_GPIO_TogglePin(USER_LED_GPIO_Port, USER_LED_Pin);
+        HAL_Delay(600);
     }
 }
 
@@ -92,6 +100,9 @@ static void MX_SPI2_Init(void)
     hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
     hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
     hspi2.Init.NSS = SPI_NSS_SOFT;
+    /* PCLK1=50MHz / 2 = 25MHz: max possible on this bus. Exceeds the ILI9486 datasheet's ~15MHz
+     * write spec but is commonly reliable in practice; drop to SPI_BAUDRATEPRESCALER_4 (12.5MHz)
+     * if the display glitches/tears. */
     hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
     hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
     hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
