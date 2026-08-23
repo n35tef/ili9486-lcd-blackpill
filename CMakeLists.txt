@@ -34,27 +34,30 @@ add_executable(${CMAKE_PROJECT_NAME})
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
 
-# Link directories setup
-target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined library search paths
-)
+# LVGL: compile directly (avoids LVGL's own CMakeLists invoking project()/enable_language(CXX))
+file(GLOB_RECURSE LVGL_SOURCES ${CMAKE_SOURCE_DIR}/Drivers/lvgl/src/*.c)
 
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     ${CMAKE_SOURCE_DIR}/Drivers/ili9486/ili9486.c
     ${CMAKE_SOURCE_DIR}/Drivers/ili9486/lcd_io_spi2.c
+    ${CMAKE_SOURCE_DIR}/Core/Src/lvgl_port.c
+    ${CMAKE_SOURCE_DIR}/Core/fonts/hack_48.c
+    ${LVGL_SOURCES}
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
     ${CMAKE_SOURCE_DIR}/Drivers
+    ${CMAKE_SOURCE_DIR}/Drivers/lvgl
 )
 
-# Add project symbols (macros)
+# LVGL: use simple lv_conf.h include (resolved via Core/Inc/ which is already on the path)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined symbols
+    LV_CONF_INCLUDE_SIMPLE
+    LV_KCONFIG_IGNORE
 )
 
 # Remove wrong libob.a library dependency when using cpp files

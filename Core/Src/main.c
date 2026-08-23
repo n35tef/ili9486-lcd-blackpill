@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 #include "main.h"
 #include "Drivers/ili9486/ili9486.h"
+#include "lvgl_port.h"
 
 SPI_HandleTypeDef hspi2;
 DMA_HandleTypeDef hdma_spi2_tx;
@@ -38,21 +39,17 @@ int main(void)
     MX_SPI2_Init();
 
     ili9486_init();
+    lvgl_port_init();
+
+    lv_obj_t* label = lv_label_create(lv_screen_active());
+    lv_label_set_text(label, "ILI9486 + LVGL");
+    extern const lv_font_t hack_48;
+    lv_obj_set_style_text_font(label, &hack_48, 0);
+    lv_obj_center(label);
 
     while (1)
     {
-        /* Cycle full-screen colors so any panel response is obvious (independent of read-back) */
-        ili9486_fill_screen(ILI9486_RED);
-        HAL_GPIO_TogglePin(USER_LED_GPIO_Port, USER_LED_Pin);
-        HAL_Delay(600);
-
-        ili9486_fill_screen(ILI9486_GREEN);
-        HAL_GPIO_TogglePin(USER_LED_GPIO_Port, USER_LED_Pin);
-        HAL_Delay(600);
-
-        ili9486_fill_screen(ILI9486_BLUE);
-        HAL_GPIO_TogglePin(USER_LED_GPIO_Port, USER_LED_Pin);
-        HAL_Delay(600);
+        lv_timer_handler();
     }
 }
 
