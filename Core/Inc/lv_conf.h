@@ -9,16 +9,24 @@
 /* Color depth: 16 = RGB565 (matches ILI9486 pixel format) */
 #define LV_COLOR_DEPTH 16
 
+/* lcd_io_write_pixels_async() sends px_map bytes raw (fbtft-style, MSB byte first);
+ * LVGL renders RGB565 in native little-endian, so swap byte pairs before flush or every
+ * hue except grayscale/white comes out wrong (e.g. dark blue -> olive green). */
+#define LV_COLOR_16_SWAP 1
+
 /* Use LVGL's built-in malloc pool; no OS/heap dependency */
 #define LV_USE_STDLIB_MALLOC    LV_STDLIB_BUILTIN
 #define LV_USE_STDLIB_STRING    LV_STDLIB_BUILTIN
 #define LV_USE_STDLIB_SPRINTF   LV_STDLIB_BUILTIN
 
-/* 16KB internal heap for widget/style/animation objects */
-#define LV_MEM_SIZE (16 * 1024U)
+/* 24KB internal heap for widget/style/animation objects + SW-render mask buffers
+ * (16KB was too small: circle/arc anti-alias mask mallocs were failing on the dashboard's
+ * RPM scale, hanging at LV_ASSERT_MALLOC before the first flush). */
+#define LV_MEM_SIZE (24 * 1024U)
 
-/* ~60fps target (16ms) */
-#define LV_DEF_REFR_PERIOD 16
+/* refresh as fast as render+DMA flush allows; frame rate is paced by flush completion,
+ * not this period, so 1ms just removes the artificial idle gap between frames */
+#define LV_DEF_REFR_PERIOD 1
 
 /* DPI for a 3.5" 480×320 panel */
 #define LV_DPI_DEF 160
@@ -61,8 +69,9 @@
 #define LV_DRAW_SW_SHADOW_CACHE_SIZE 0
 #define LV_DRAW_SW_CIRCLE_CACHE_SIZE 4
 
-/* 24KB layer buffer for intermediate blending; fits in remaining RAM */
-#define LV_DRAW_LAYER_SIMPLE_BUF_SIZE (24 * 1024)
+/* Layer buffer for intermediate blending, allocated from the same LV_MEM_SIZE heap above -
+ * must stay well under it or any layered/blended draw is guaranteed to fail. */
+#define LV_DRAW_LAYER_SIMPLE_BUF_SIZE (4 * 1024)
 
 /* Logging: off for release builds */
 #define LV_USE_LOG 0
@@ -79,7 +88,7 @@
 #define LV_FONT_MONTSERRAT_10 0
 #define LV_FONT_MONTSERRAT_12 0
 #define LV_FONT_MONTSERRAT_14 1
-#define LV_FONT_MONTSERRAT_16 0
+#define LV_FONT_MONTSERRAT_16 1
 #define LV_FONT_MONTSERRAT_18 0
 #define LV_FONT_MONTSERRAT_20 0
 #define LV_FONT_MONTSERRAT_22 0

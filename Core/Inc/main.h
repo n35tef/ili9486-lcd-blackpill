@@ -61,7 +61,7 @@ extern "C"
 #define USER_LED_Pin GPIO_PIN_13
 #define USER_LED_GPIO_Port GPIOC
 #define USER_KEY_Pin GPIO_PIN_0
-#define USER_KEY_GPIO_Port GPIOA
+#define USER_KEY_GPIO_Port GPIOB
 #define SPI2_CS_Pin GPIO_PIN_3
 #define SPI2_CS_GPIO_Port GPIOB
 #define LCD_DATA_CTL_Pin GPIO_PIN_12

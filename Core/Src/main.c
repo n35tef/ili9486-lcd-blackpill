@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 #include "main.h"
 #include "Drivers/ili9486/ili9486.h"
+#include "dashboard_ui.h"
 #include "lvgl_port.h"
 
 SPI_HandleTypeDef hspi2;
@@ -40,12 +41,7 @@ int main(void)
 
     ili9486_init();
     lvgl_port_init();
-
-    lv_obj_t* label = lv_label_create(lv_screen_active());
-    lv_label_set_text(label, "ILI9486 + LVGL");
-    extern const lv_font_t hack_48;
-    lv_obj_set_style_text_font(label, &hack_48, 0);
-    lv_obj_center(label);
+    dashboard_ui_init();
 
     while (1)
     {
