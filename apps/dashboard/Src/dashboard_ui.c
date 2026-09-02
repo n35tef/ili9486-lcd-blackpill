@@ -6,15 +6,14 @@
 
 extern const lv_font_t hack_48;
 
-#define COLOR_BG() lv_color_hex(0x070B16) /* near-black, deep Parisian-blue tint */
+#define COLOR_BG() lv_color_hex(0x070B16)
 #define COLOR_NEON_CYAN() lv_color_hex(0x00E5FF)
 #define COLOR_NEON_RED() lv_color_hex(0xFF2D55)
 #define COLOR_NEON_YELLOW() lv_color_hex(0xFFD500)
 #define TT_OPA_OFF LV_OPA_30
 #define TT_OPA_ON LV_OPA_COVER
-#define TT_CAPTION_OPA_OFF LV_OPA_10 /* captions stay near-invisible until their icon lights up */
+#define TT_CAPTION_OPA_OFF LV_OPA_10
 
-/* RPM needle length is negative so it auto-scales to the gauge radius (radius - |len|). */
 #define RPM_NEEDLE_LEN (-20)
 
 static lv_obj_t* s_speed_label;
@@ -95,7 +94,6 @@ static void build_rpm_gauge(lv_obj_t* parent)
     lv_scale_set_angle_range(s_rpm_scale, 270);
     lv_scale_set_rotation(s_rpm_scale, 135);
 
-    /* major ticks are labelled 0-8 (x1000 rpm) instead of raw 0-8000 */
     static const char* rpm_labels[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", NULL};
     lv_scale_set_text_src(s_rpm_scale, rpm_labels);
 
@@ -107,7 +105,6 @@ static void build_rpm_gauge(lv_obj_t* parent)
     lv_obj_set_style_line_color(s_rpm_scale, COLOR_NEON_CYAN(), LV_PART_ITEMS);
     lv_obj_set_style_line_width(s_rpm_scale, 2, LV_PART_ITEMS);
 
-    /* redline section */
     static lv_style_t style_redline;
     lv_style_init(&style_redline);
     lv_style_set_line_color(&style_redline, lv_palette_main(LV_PALETTE_RED));
@@ -137,7 +134,6 @@ static void build_speed_label(lv_obj_t* parent)
     lv_obj_set_style_text_font(s_speed_label, &hack_48, 0);
     lv_obj_set_style_text_color(s_speed_label, COLOR_NEON_CYAN(), 0);
     lv_label_set_text(s_speed_label, "0");
-    /* fixed width + centered text so "km/h" below stays centered as digit count changes */
     lv_obj_set_width(s_speed_label, 160);
     lv_obj_set_style_text_align(s_speed_label, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align(s_speed_label, LV_ALIGN_TOP_LEFT, 280, 90);
@@ -148,8 +144,6 @@ static void build_speed_label(lv_obj_t* parent)
     lv_obj_align_to(unit_label, s_speed_label, LV_ALIGN_OUT_BOTTOM_MID, 0, 4);
 }
 
-/* Fixed 50x50 area a telltale's shapes are built/centered in; caption sits below it in the flex
- * column, colored to match the icon's on-state hue and faded via *cap_out just like the icon. */
 static lv_obj_t* create_telltale_slot(lv_obj_t* row, const char* caption, lv_color_t color,
                                       lv_obj_t** cap_out)
 {
@@ -202,7 +196,6 @@ static void build_telltale_oil(lv_obj_t* icon_area)
     lv_obj_set_style_bg_opa(s_oil_body, LV_OPA_TRANSP, 0);
     lv_obj_align(s_oil_body, LV_ALIGN_BOTTOM_MID, 0, -4);
 
-    /* teardrop tip: closed triangle sitting on top of the circle body */
     static lv_point_precise_t oil_tip_pts[] = {{0, 10}, {14, 10}, {7, 0}, {0, 10}};
     s_oil_tip = lv_line_create(icon_area);
     lv_obj_set_size(s_oil_tip, 14, 10);
@@ -228,7 +221,6 @@ static void build_telltale_parkbrake(lv_obj_t* icon_area)
     lv_label_set_text(s_pb_label, "P");
     lv_obj_center(s_pb_label);
 
-    /* two partial arcs flanking the circle, mimicking the "(P)" parking-brake symbol */
     s_pb_arc_l = lv_arc_create(icon_area);
     lv_obj_set_size(s_pb_arc_l, 42, 42);
     lv_arc_set_bg_angles(s_pb_arc_l, 100, 260);
@@ -295,7 +287,6 @@ static void telltale_set_all(bool on)
     telltale_set_engine(on);
 }
 
-/* idx: 0=battery, 1=oil, 2=brake, 3=engine; any other value lights none */
 static void telltale_set_only(int32_t idx)
 {
     telltale_set_battery(idx == 0);
@@ -307,17 +298,12 @@ static void telltale_set_only(int32_t idx)
 static void speed_tick_cb(lv_timer_t* t)
 {
     (void)t;
-    /* Advance exactly one km/h per displayed frame: the frame counter only moves when a frame
-     * has actually been flushed to the panel, so the sweep runs at the true max frame rate while
-     * never skipping a value. Runs every main-loop pass; the guard makes it a cheap no-op between
-     * frames. */
     static uint32_t last_frame;
     uint32_t frame = lvgl_port_get_frame_count();
     if (frame == last_frame)
         return;
     last_frame = frame;
 
-    /* triangle-wave sweep 0 -> 180 -> 0 km/h */
     static int32_t speed = 0;
     static int32_t speed_dir = 1;
     speed += speed_dir;
@@ -343,7 +329,6 @@ static void tick_cb(lv_timer_t* t)
     static uint32_t phase_ms = 0;
     phase_ms += 50;
 
-    /* telltale demo pattern: 1-2-3-4, off-on-off-on-off, 4-3-2-1, off-on-off-on-off, repeat */
     static const int32_t tt_steps[] = {
         0, 1, 2, 3, -1, -2, -1, -2, -1, 3, 2, 1, 0, -1, -2, -1, -2, -1,
     };
@@ -357,7 +342,6 @@ static void tick_cb(lv_timer_t* t)
     else
         telltale_set_only(step);
 
-    /* merge all icon/caption changes into one invalidate so they flush to the panel together */
     lv_obj_invalidate(s_telltale_row);
 }
 
@@ -371,8 +355,6 @@ void dashboard_ui_init(void)
     build_speed_label(scr);
     build_telltale_row(scr);
 
-    /* period 0: lv_tick has 1ms resolution (SysTick), so this fires every main-loop pass -
-     * as fast as lv_timer_handler() itself is called, which is the real achievable ceiling */
     lv_timer_create(speed_tick_cb, 0, NULL);
     lv_timer_create(tick_cb, 50, NULL);
 }

@@ -3,10 +3,6 @@
 
 #include <stdint.h>
 
-/* Confirmed genuine ILI9486, driven with the vendor init sequence decoded from Waveshare's
-   waveshare35c.dtbo (regwidth=16 SPI framing - see lcd_io_spi2.h LCD_REGWIDTH16). */
-
-/* MADCTL=0xE8 (MY|MX|MV|BGR): landscape, 180° rotated to match physical panel mounting */
 #define ILI9486_WIDTH 480
 #define ILI9486_HEIGHT 320
 #define LCD_BYTES_PER_PIXEL 2

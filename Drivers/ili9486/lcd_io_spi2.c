@@ -58,7 +58,6 @@ void lcd_io_write_data(uint8_t data)
     lcd_io_end_transfer();
 }
 
-/* Register parameters (init/gamma/CASET/PASET): 16-bit big-endian per byte when regwidth=16 */
 void lcd_io_write_data_buf(const uint8_t* buf, size_t len)
 {
     lcd_dc_data();
@@ -81,8 +80,6 @@ void lcd_io_write_data_buf(const uint8_t* buf, size_t len)
     lcd_io_end_transfer();
 }
 
-/* Raw pixel stream (RGB565): never regwidth-prefixed, matches fbtft write_vmem16_bus8.
- * Blocking: waits for each DMA chunk before starting the next. */
 void lcd_io_write_pixels(const uint8_t* buf, size_t len)
 {
     lcd_dc_data();
@@ -100,8 +97,6 @@ void lcd_io_write_pixels(const uint8_t* buf, size_t len)
     lcd_io_end_transfer();
 }
 
-/* Non-blocking pixel write for LVGL's double-buffered flush path.
- * CS stays low until lcd_io_pixels_async_done() is called from HAL_SPI_TxCpltCallback. */
 void lcd_io_write_pixels_async(const uint8_t* buf, size_t len)
 {
     lcd_dc_data();

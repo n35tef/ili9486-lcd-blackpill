@@ -2,7 +2,6 @@
 #include "Drivers/ili9486/lcd_io_spi2.h"
 #include "main.h"
 
-/* ILI9486 command opcodes */
 #define ILI9486_CMD_SLPOUT 0x11
 #define ILI9486_CMD_DISPON 0x29
 #define ILI9486_CMD_CASET 0x2A
@@ -51,7 +50,7 @@ void ili9486_init(void)
     WR_DAT(0x55);
     WR_CMD(ILI9486_CMD_SLPOUT);
     WR_CMD(ILI9486_CMD_MADCTL);
-    WR_DAT(0xE8); /* MY|MX|MV|BGR = landscape, 180° rotated */
+    WR_DAT(0xE8);
     HAL_Delay(255);
     WR_CMD(ILI9486_CMD_DISPON);
 }
@@ -75,7 +74,6 @@ void ili9486_set_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 
 void ili9486_fill_screen(uint16_t color)
 {
-    /* static: the line buffer is too large for the 1KB main stack */
     static uint8_t line[ILI9486_WIDTH * LCD_BYTES_PER_PIXEL];
 
     for (uint32_t i = 0; i < ILI9486_WIDTH; i++)

@@ -43,8 +43,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/Drivers/ili9486/ili9486.c
     ${CMAKE_SOURCE_DIR}/Drivers/ili9486/lcd_io_spi2.c
     ${CMAKE_SOURCE_DIR}/Core/Src/lvgl_port.c
-    ${CMAKE_SOURCE_DIR}/Core/Src/dashboard_ui.c
-    ${CMAKE_SOURCE_DIR}/Core/fonts/hack_48.c
+    ${CMAKE_SOURCE_DIR}/apps/dashboard/Src/main.c
+    ${CMAKE_SOURCE_DIR}/apps/dashboard/Src/dashboard_ui.c
+    ${CMAKE_SOURCE_DIR}/apps/dashboard/fonts/hack_48.c
     ${LVGL_SOURCES}
 )
 
@@ -53,6 +54,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
     ${CMAKE_SOURCE_DIR}/Drivers
     ${CMAKE_SOURCE_DIR}/Drivers/lvgl
+    ${CMAKE_SOURCE_DIR}/apps/dashboard/Inc
 )
 
 # LVGL: use simple lv_conf.h include (resolved via Core/Inc/ which is already on the path)

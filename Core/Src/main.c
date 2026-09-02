@@ -1,24 +1,5 @@
-/* USER CODE BEGIN Header */
-/**
- ******************************************************************************
- * @file           : main.c
- * @brief          : Main program body
- ******************************************************************************
- * @attention
- *
- * Copyright (c) 2026 STMicroelectronics.
- * All rights reserved.
- *
- * This software is licensed under terms that can be found in the LICENSE file
- * in the root directory of this software component.
- * If no LICENSE file comes with this software, it is provided AS-IS.
- *
- ******************************************************************************
- */
-/* USER CODE END Header */
 #include "main.h"
 #include "Drivers/ili9486/ili9486.h"
-#include "dashboard_ui.h"
 #include "lvgl_port.h"
 
 SPI_HandleTypeDef hspi2;
@@ -30,8 +11,7 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_SPI2_Init(void);
 
-
-int main(void)
+void core_init(void)
 {
     HAL_Init();
     SystemClock_Config();
@@ -41,12 +21,6 @@ int main(void)
 
     ili9486_init();
     lvgl_port_init();
-    dashboard_ui_init();
-
-    while (1)
-    {
-        lv_timer_handler();
-    }
 }
 
 void SystemClock_Config(void)
@@ -93,9 +67,6 @@ static void MX_SPI2_Init(void)
     hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
     hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
     hspi2.Init.NSS = SPI_NSS_SOFT;
-    /* PCLK1=50MHz / 2 = 25MHz: max possible on this bus. Exceeds the ILI9486 datasheet's ~15MHz
-     * write spec but is commonly reliable in practice; drop to SPI_BAUDRATEPRESCALER_4 (12.5MHz)
-     * if the display glitches/tears. */
     hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
     hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
     hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
